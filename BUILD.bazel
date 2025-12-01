@@ -1,0 +1,76 @@
+load("@rules_jsonnet//jsonnet:jsonnet.bzl", "jsonnet_library", "jsonnet_to_json")
+
+jsonnet_library(
+    name = "reference_data",
+    srcs = [
+        "reference-data/environments.libsonnet",
+        "reference-data/workload-classes.libsonnet",
+    ],
+)
+
+jsonnet_library(
+    name = "lib",
+    srcs = [
+        "lib/conventions.libsonnet",
+        "lib/render.libsonnet",
+        "lib/validate.libsonnet",
+    ],
+    deps = [":reference_data"],
+)
+
+jsonnet_library(
+    name = "checkout_api_input",
+    srcs = ["inputs/checkout-api.libsonnet"],
+)
+
+jsonnet_library(
+    name = "ingest_pipeline_input",
+    srcs = ["inputs/ingest-pipeline.libsonnet"],
+)
+
+jsonnet_library(
+    name = "report_exporter_input",
+    srcs = ["inputs/report-exporter.libsonnet"],
+)
+
+jsonnet_to_json(
+    name = "checkout-api",
+    src = "checkout-api.jsonnet",
+    outs = [
+        "out/prod/checkout-api.json",
+        "out/prod/checkout-api.provenance.json",
+    ],
+    multiple_outputs = True,
+    deps = [
+        ":lib",
+        ":checkout_api_input",
+    ],
+)
+
+jsonnet_to_json(
+    name = "ingest-pipeline",
+    src = "ingest-pipeline.jsonnet",
+    outs = [
+        "out/prod/ingest-pipeline.json",
+        "out/prod/ingest-pipeline.provenance.json",
+    ],
+    multiple_outputs = True,
+    deps = [
+        ":lib",
+        ":ingest_pipeline_input",
+    ],
+)
+
+jsonnet_to_json(
+    name = "report-exporter",
+    src = "report-exporter.jsonnet",
+    outs = [
+        "out/staging/report-exporter.json",
+        "out/staging/report-exporter.provenance.json",
+    ],
+    multiple_outputs = True,
+    deps = [
+        ":lib",
+        ":report_exporter_input",
+    ],
+)

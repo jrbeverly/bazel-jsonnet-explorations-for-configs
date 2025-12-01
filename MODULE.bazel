@@ -1,0 +1,3 @@
+module(name = "bazel_jsonnet_explorations")
+
+bazel_dep(name = "rules_jsonnet", version = "0.6.0")
